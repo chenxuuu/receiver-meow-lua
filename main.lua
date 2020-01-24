@@ -39,12 +39,12 @@ require("strings")
 --重载几个可能影响中文目录的函数
 local oldrequire = require
 require = function (s)
-    local s = apiGetAsciiHex(s):fromHex()
+    local s = Utils.GetAsciiHex(s):fromHex()
     return oldrequire(s)
 end
 local oldloadfile = loadfile
 loadfile = function (s)
-    local s = apiGetAsciiHex(s):fromHex()
+    local s = Utils.GetAsciiHex(s):fromHex()
     return oldloadfile(s)
 end
 
@@ -97,6 +97,30 @@ function asyncHttpPost(url,para,timeout,cookie,contentType)
     end)
     return sys.waitUntil(delayFlag, timeout)
 end
+
+--封装一个异步的文件下载接口
+function asyncFileDownload(url, path, maxSize, timeout)
+    local delayFlag = "http_file_"..os.time()..getId()--基本没有重复可能性的唯一标志
+    sys.async("com.papapoi.ReceiverMeow","Native.Csharp.App.LuaEnv.Utils.HttpDownload",
+            {url, path, maxSize or 1024 * 1024 * 20, timeout or 5000},
+    function (r,d)
+        sys.publish(delayFlag,r,d)
+    end)
+    return sys.waitUntil(delayFlag, timeout)
+end
+
+--根据url显示图片
+function asyncImage(url)
+    local file = "0LuaTemp"..os.time()..getId()..".luatemp"
+    local sr,fr,dr = asyncFileDownload(url,"data/image/"..file,1024 * 1024 * 20,5000)
+    if sr and fr and dr then
+        return "[CQ:image,file="..file.."]"
+    else
+        return "【图片加载失败】"
+    end
+end
+
+
 
 --加强随机数随机性
 math.randomseed(tostring(os.time()):reverse():sub(1, 6))
