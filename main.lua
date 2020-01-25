@@ -1,4 +1,7 @@
 --导入需要的命名空间
+--酷q库
+import("Native.Csharp.Sdk","Native.Csharp.Sdk.Cqp")
+CQ = CQApi
 import("com.papapoi.ReceiverMeow","Native.Csharp.App.Common")
 --Utils接口
 import("com.papapoi.ReceiverMeow","Native.Csharp.App.LuaEnv")
@@ -10,7 +13,8 @@ import("System.Text")
 --简化某些函数的语法
 CQLog = AppData.CQLog
 CQApi = AppData.CQApi
-CQLog:Debug("lua插件","加载新虚拟机"..name)
+CQLog:Info("lua插件","加载新虚拟机"..name)
+CQLog:Debug("lua插件","插件版本"..Utils.GetVersion())
 
 --重写print函数，重定向到debug接口输出
 function print(...)
@@ -21,7 +25,7 @@ function print(...)
     if #r == 0 then
         table.insert(r,"nil")
     end
-    CQLog:Debug("lua插件("..name..")",table.concat(r,"  "))
+    CQLog:Info("lua插件("..name..")",table.concat(r,"  "))
 end
 
 --加上需要require的路径
@@ -31,7 +35,7 @@ rootPath = rootPath:gsub("%x%x", function(c)
                                     return string.char(tonumber(c, 16))
                                 end)
 package.path = package.path..
-";"..rootPath.."lua/require/?.lua"
+";"..rootPath.."lua/require/?.lua;"..rootPath.."lua/events/?.lua;"
 
 --加载字符串工具包
 require("strings")
@@ -79,23 +83,25 @@ end
 function asyncHttpGet(url,para,timeout,cookie)
     local delayFlag = "http_get_"..os.time()..getId()--基本没有重复可能性的唯一标志
     sys.async("com.papapoi.ReceiverMeow","Native.Csharp.App.LuaEnv.Utils.HttpGet",
-            {url or "",para or "",timeout or 5000,cookie or ""},
+            {url,para or "",timeout or 5000,cookie or ""},
     function (r,d)
         sys.publish(delayFlag,r,d)
     end)
-    return sys.waitUntil(delayFlag, timeout)
+    local r1,r2,d = sys.waitUntil(delayFlag, timeout)
+    return d or "",r2 and r1
 end
 
 --封装一个异步的http post接口
 function asyncHttpPost(url,para,timeout,cookie,contentType)
     local delayFlag = "http_post_"..os.time()..getId()--基本没有重复可能性的唯一标志
     sys.async("com.papapoi.ReceiverMeow","Native.Csharp.App.LuaEnv.Utils.HttpPost",
-            {url or "",para or "",timeout or 5000,cookie or "",
+            {url,para or "",timeout or 5000,cookie or "",
                 contentType or "application/x-www-form-urlencoded"},
     function (r,d)
         sys.publish(delayFlag,r,d)
     end)
-    return sys.waitUntil(delayFlag, timeout)
+    local r1,r2,d = sys.waitUntil(delayFlag, timeout)
+    return d or "",r2 and r1
 end
 
 --封装一个异步的文件下载接口
@@ -116,11 +122,9 @@ function asyncImage(url)
     if sr and fr and dr then
         return "[CQ:image,file="..file.."]"
     else
-        return "【图片加载失败】"
+        return ""
     end
 end
-
-
 
 --加强随机数随机性
 math.randomseed(tostring(os.time()):reverse():sub(1, 6))
@@ -136,10 +140,37 @@ function getRandomString(len)
     return ret
 end
 
-sys.tiggerRegister("groupMessage",function (data)
-    -- AppData.CQLog:Debug("Lua收到消息",data.msg)
-    -- sys.taskInit(function ()
-    --     sys.wait(5000)
-    --     AppData.CQApi:SendGroupMessage(data.group,"收到消息："..data.msg)
-    -- end)
-end)
+--分配各个事件
+local events = {
+    AppEnable = "AppEnable",--启动事件
+    --FriendAdd = "",--好友已添加
+    FriendAddRequest = "",--好友请求
+    GroupAddRequest = "",--加群请求
+    GroupAddInvite = "",--机器人被邀请进群
+    GroupBanSpeak = "",--群禁言
+    GroupUnBanSpeak = "",--群解除禁言
+    GroupManageSet = "",--设置管理
+    GroupManageRemove = "",--取消管理
+    GroupMemberExit = "",--群成员减少，主动退
+    GroupMemberRemove = "",--群成员减少，被踢
+    GroupMemberInvite = "",--群成员增加，被邀请
+    GroupMemberPass = "",--群成员增加，申请的
+    GroupMessage = "",--群消息
+    GroupFileUpload = "",--有人上传文件
+    PrivateMessage = "",--私聊消息
+}
+
+for i,j in pairs(events) do
+    local f
+    local _,info = pcall(function() f = require(j) end)
+    if f then
+        sys.tiggerRegister(i,f)
+        CQLog:Debug("lua插件",name.."注册事件"..i..","..j)
+    else
+        --报错信息先不显示
+        --CQLog:Debug("lua插件",name.."注册事件失败"..i..","..(info or "错误信息为空"))
+    end
+
+end
+
+
