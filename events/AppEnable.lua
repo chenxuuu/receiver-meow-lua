@@ -1,3 +1,7 @@
+--插件启动后调用的文件
+--目前仅用来注册各种开机后会运行的东西
+--并且当前文件的功能，仅在账号为chenxu自己的测试qq下运行
+
 --检查GitHub的最新commit记录
 function checkGitHub(url,save)
     local githubRss = asyncHttpGet(url)
@@ -266,7 +270,7 @@ local fc2List = {
     {"78847652","shiori🍄"}, --大姐
 }
 
-return function (data)
+return function ()
     --防止多次启动
     if AppFirstStart then return end
     AppFirstStart = true
@@ -275,7 +279,7 @@ return function (data)
 
     --服务器空间定期检查任务，十分钟一次
     CQLog:Debug("lua插件","加载服务器空间定期检查任务")
-    sys.timerLoopStart(pcall,600 * 1000,function ()
+    sys.timerLoopStart(function ()
         CQLog:Debug("lua插件","执行服务器空间定期检查任务")
         local free = Utils.GetHardDiskFreeSpace("D")
         if free < 1024 * 10 then--空间小于10G
@@ -283,7 +287,7 @@ return function (data)
             Utils.CQCode_At(961726194)..
             "你的小垃圾服务器空间只有"..tostring(Utils.GetHardDiskFreeSpace("D")).."M空间了知道吗？快去清理")
         end
-    end)
+    end,600 * 1000)
 
     --mc服务器定时重启
     CQLog:Debug("lua插件","加载mc服务器定时重启任务")

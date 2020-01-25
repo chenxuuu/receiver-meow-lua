@@ -158,6 +158,7 @@ local events = {
     GroupMessage = "",--群消息
     GroupFileUpload = "",--有人上传文件
     PrivateMessage = "",--私聊消息
+    TcpServer = "ReceiveTcp",--收到tcp客户端发来的数据
 }
 
 for i,j in pairs(events) do
