@@ -327,8 +327,8 @@ return function ()
         while true do
             CQLog:Debug("lua插件","检查GitHub更新，开始执行")
             local r,info = pcall(function ()
-                r,t = checkGitRelease("https://api.github.com/repos/chenxuuu/receiver-meow/releases/latest","githubRelease")
-                if r and t then CQApi:SendGroupMessage(931546484, "接待喵lua插件发现插件版本更新\r\n"..t) end
+                local cr,ct = checkGitRelease("https://api.github.com/repos/chenxuuu/receiver-meow/releases/latest","githubRelease")
+                if cr and ct then CQApi:SendGroupMessage(931546484, "接待喵lua插件发现插件版本更新\r\n"..ct) end
             end)
             if not r then print(info) end
             CQLog:Debug("lua插件","检查GitHub更新，结束执行")
