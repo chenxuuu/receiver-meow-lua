@@ -1,0 +1,12 @@
+{
+    "Lua.diagnostics.globals": [
+        "LuaEnvName",
+        "XmlApi",
+        "Utils",
+        "Directory",
+        "import",
+        "sys",
+        "TcpServer",
+        "TimeSpan"
+    ]
+}

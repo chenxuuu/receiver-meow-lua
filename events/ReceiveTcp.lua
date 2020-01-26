@@ -22,6 +22,28 @@ local function startCount(p)
     end
 end
 
+local function startCountDay(p)
+    local fname = "minecraftData"..os.date("%Y-%m-%d-",os.time())
+    local onlineData = XmlApi.Get(fname,p)
+    local data = onlineData == "" and
+    {
+        time = 0,
+        last = "offline",
+        ltime = os.time(),
+    } or jsonDecode(onlineData)
+    data.last = "online"
+    data.ltime = os.time()
+    local d,r = jsonEncode(data)
+    if r then
+        XmlApi.Set(fname,p,d)
+    end
+    CQApi:SendGroupMessage(241464054,"玩家"..p.."今日累计在线"..
+        string.format("%d小时%d分钟",
+            math.floor(data.time/(60*60)),
+            math.floor(data.time/60)%60 )
+        )
+end
+
 --结束统计在线时长
 local function stopCount(p)
     local onlineData = XmlApi.Get("minecraftData",p)
@@ -41,6 +63,30 @@ local function stopCount(p)
     end
 end
 
+local function stopCountDay(p)
+    local fname = "minecraftData"..os.date("%Y-%m-%d-",os.time())
+    local onlineData = XmlApi.Get(fname,p)
+    local data = onlineData == "" and
+    {
+        time = 0,
+        last = "offline",
+        ltime = os.time(),
+    } or jsonDecode(onlineData)
+    if data.last ~= "online" then return end--上次信息不是在线，停止记录
+    data.last = "offline"
+    data.time = data.time + os.time() - data.ltime
+    data.ltime = os.time()
+    local d,r = jsonEncode(data)
+    if r then
+        XmlApi.Set(fname,p,d)
+    end
+    CQApi:SendGroupMessage(241464054,"玩家"..p.."今日累计在线"..
+        string.format("%d小时%d分钟",
+            math.floor(data.time/(60*60)),
+            math.floor(data.time/60)%60 )
+        )
+end
+
 --添加在线的人
 local function onlineAdd(p)
     local onlineData = XmlApi.Get("minecraftData","[online]")
@@ -51,6 +97,7 @@ local function onlineAdd(p)
     table.insert(online,p)
     XmlApi.Set("minecraftData","[online]",table.concat(online,","))
     startCount(p)
+    startCountDay(p)
 end
 
 --删除在线的人
@@ -69,6 +116,7 @@ local function onlineDel(p)
     end
     XmlApi.Set("minecraftData","[online]",table.concat(onlineResult,","))
     stopCount(p)
+    stopCountDay(p)
 end
 
 --删除所有在线的人

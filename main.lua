@@ -1,7 +1,5 @@
 --导入需要的命名空间
 --酷q库
-import("Native.Csharp.Sdk","Native.Csharp.Sdk.Cqp")
-CQ = CQApi
 import("com.papapoi.ReceiverMeow","Native.Csharp.App.Common")
 --Utils接口
 import("com.papapoi.ReceiverMeow","Native.Csharp.App.LuaEnv")
@@ -13,7 +11,7 @@ import("System.Text")
 --简化某些函数的语法
 CQLog = AppData.CQLog
 CQApi = AppData.CQApi
-CQLog:Info("lua插件","加载新虚拟机"..name)
+CQLog:Info("lua插件","加载新虚拟机"..LuaEnvName)
 CQLog:Debug("lua插件","插件版本"..Utils.GetVersion())
 
 --重写print函数，重定向到debug接口输出
@@ -25,7 +23,7 @@ function print(...)
     if #r == 0 then
         table.insert(r,"nil")
     end
-    CQLog:Info("lua插件("..name..")",table.concat(r,"  "))
+    CQLog:Info("lua插件("..LuaEnvName..")",table.concat(r,"  "))
 end
 
 --加上需要require的路径
@@ -155,9 +153,9 @@ local events = {
     GroupMemberRemove = "GroupMemberLeave",--群成员减少，被踢--┘
     GroupMemberInvite = "GroupMemberJoin",--群成员增加，被邀请--┐---→统一处理
     GroupMemberPass = "GroupMemberJoin",--群成员增加，申请的----┘
-    GroupMessage = "",--群消息
+    GroupMessage = "Message",--群消息-------┐---→统一处理
+    PrivateMessage = "Message",--私聊消息---┘
     GroupFileUpload = "GroupFileUpload",--有人上传文件
-    PrivateMessage = "",--私聊消息
     TcpServer = "ReceiveTcp",--收到tcp客户端发来的数据
 }
 
@@ -166,12 +164,10 @@ for i,j in pairs(events) do
     local _,info = pcall(function() f = require(j) end)
     if f then
         sys.tiggerRegister(i,f)
-        CQLog:Debug("lua插件",name.."注册事件"..i..","..j)
+        CQLog:Debug("lua插件",LuaEnvName.."注册事件"..i..","..j)
     else
         --报错信息先不显示
-        --CQLog:Debug("lua插件",name.."注册事件失败"..i..","..(info or "错误信息为空"))
+        --CQLog:Debug("lua插件",LuaEnvName.."注册事件失败"..i..","..(info or "错误信息为空"))
     end
 
 end
-
-
