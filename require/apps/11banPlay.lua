@@ -1,6 +1,6 @@
 import('System')
 local function cqSetGroupBanSpeak(g,q,t)
-    local time = TimeSpan(10000*t)
+    local time = TimeSpan(0,0,t)
     CQApi:SetGroupMemberBanSpeak(g,q,time)
 end
 
