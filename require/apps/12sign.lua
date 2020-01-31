@@ -1,5 +1,5 @@
 local function sign(qq,msg,group)
-    if msg == "开启签到" and qq == admin then
+    if msg == "开启签到" and qq == Utils.setting.AdminQQ then
         XmlApi.Delete("settings","sign_open"..tostring(group))
         return "已开启群"..tostring(group).."的签到功能"
     elseif msg == "关闭签到" then

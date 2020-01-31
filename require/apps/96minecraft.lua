@@ -91,7 +91,8 @@ local function mc(msg,qq,group)
                     ltime = os.time(),
                 } or jsonDecode(onlineData)
                 if data.last == "offline" then
-                    sendMessage(241464054,Utils.CQCode_At(qq).."请上线后再操作")
+                    sendMessage(241464054,Utils.CQCode_At(qq).."你绑定的id为"..player..
+                        "，请上线后再操作")
                 else
                     sendMessage(241464054,Utils.CQCode_At(qq).."已给予玩家"..player.."权限")
                     apiTcpSend("lp user "..player.." permission set group.whitelist",true)
