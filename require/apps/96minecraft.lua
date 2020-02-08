@@ -11,6 +11,12 @@ local function sendMessage(g,m)
     CQApi:SendGroupMessage(g,m)
 end
 
+import('System')
+local function cqSetGroupBanSpeak(g,q,t)
+    local time = TimeSpan(0,0,t)
+    CQApi:SetGroupMemberBanSpeak(g,q,time)
+end
+
 local function mc(msg,qq,group)
     if group == 241464054 then --玩家群
         local player = XmlApi.Get("bindQq",tostring(qq))
@@ -40,8 +46,7 @@ local function mc(msg,qq,group)
         elseif player == "" then--没绑定id
             step = tonumber(step) or 0
             if step >= 3 then
-                local time = TimeSpan(0,10,0)
-                CQApi:SetGroupMemberBanSpeak(241464054,qq,time)
+                cqSetGroupBanSpeak(241464054,qq,time*60)
                 sendMessage(241464054,Utils.CQCode_At(qq).."你没有绑定游戏id，请在十分钟后，发送“绑定”加上id，来绑定自己的id")
             else
                 sendMessage(241464054,Utils.CQCode_At(qq).."你没有绑定游戏id，请发送“绑定”加上id，来绑定自己的id")
