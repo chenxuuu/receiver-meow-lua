@@ -180,7 +180,38 @@ local function mc(msg,qq,group)
             end
             return true
         elseif msg == "清空在线" then
-            XmlApi.Set("minecraftData","[online]","")
+            --结束统计在线时长
+            local function stopCount(p)
+                local onlineData = XmlApi.Get("minecraftData",p)
+                local data = onlineData == "" and
+                {
+                    time = 0,
+                    last = "offline",
+                    ltime = os.time(),
+                } or jsonDecode(onlineData)
+                if data.last ~= "online" then return end--上次信息不是在线，停止记录
+                data.last = "offline"
+                data.time = data.time + os.time() - data.ltime
+                data.ltime = os.time()
+                local d,r = jsonEncode(data)
+                if r then
+                    XmlApi.Set("minecraftData",p,d)
+                end
+            end
+            --删除所有在线的人
+            local function onlineClear()
+                local onlineData = XmlApi.Get("minecraftData","[online]")
+                local online = {}--存储在线所有人id
+                if onlineData ~= "" then
+                    online = onlineData:split(",")
+                end
+                while #online > 0 do
+                    local player = table.remove(online,1)
+                    stopCount(player)
+                end
+                XmlApi.Set("minecraftData","[online]","")
+            end
+            onlineClear()
             sendMessage(567145439,Utils.CQCode_At(qq).."已清空所有在线信息")
             return true
         end
