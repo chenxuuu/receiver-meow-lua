@@ -1,3 +1,4 @@
+local mcApi = require("minecraft")
 local function apiTcpSend(msg,cmd)
     if cmd then TcpServer.Send("cmd"..msg) return end
     msg = msg:gsub("%[CQ:.-%]","[特殊]"):gsub("\r","")
@@ -46,7 +47,7 @@ local function mc(msg,qq,group)
         elseif player == "" then--没绑定id
             step = tonumber(step) or 0
             if step >= 3 then
-                cqSetGroupBanSpeak(241464054,qq,time*60)
+                cqSetGroupBanSpeak(241464054,qq,10*60)
                 sendMessage(241464054,Utils.CQCode_At(qq).."你没有绑定游戏id，请在十分钟后，发送“绑定”加上id，来绑定自己的id")
             else
                 sendMessage(241464054,Utils.CQCode_At(qq).."你没有绑定游戏id，请发送“绑定”加上id，来绑定自己的id")
@@ -55,19 +56,18 @@ local function mc(msg,qq,group)
             return true
         elseif msg:find("查询.+") == 1 or msg == "查询" then--查询某玩家在线信息
             local p = msg == "查询" and player or msg:match("查询(%w+)")
-            local onlineData = XmlApi.Get("minecraftData",p)
-            if onlineData == "" then
+            local data = mcApi.getData(p)
+            if data.time == 0 then
                 local tempqq = msg:match("%d+")
                 if tempqq then
                     p = XmlApi.Get("bindQq",tostring(tempqq))
-                    onlineData = XmlApi.Get("minecraftData",p)
+                    data = mcApi.getData(p)
                 end
-                if onlineData == "" then
+                if data.time == 0 then
                     sendMessage(241464054,Utils.CQCode_At(qq).."未查询到该玩家信息")
                     return true
                 end
             end
-            local data = jsonDecode(onlineData)
             if data.last == "online" then
                 data.time = data.time + os.time() - data.ltime
             end
@@ -75,8 +75,29 @@ local function mc(msg,qq,group)
                 p.."\r\n"..
                 "当前状态："..(data.last == "online" and "在线" or "离线").."\r\n"..
                 "累计在线："..string.format("%d小时%d分钟", math.floor(data.time/(60*60)), math.floor(data.time/60)%60)..
-                (data.last == "online" and "" or "\r\n上次在线时间："..os.date("%Y年%m月%d日",data.ltime)))
+                (data.last == "online" and "" or "\r\n上次在线时间："..os.date("%Y年%m月%d日",data.ltime))..
+                "\r\n在线奖励余额："..data.money.."\r\n在线时群里发“领取+数量”可取出")
             return true
+        elseif msg:find("领取%d+") == 1 then
+            local sum = msg:match("领取(%d+)")
+            if not sum then return end
+            sum = tonumber(sum)
+            local data = mcApi.getData(player)
+            if data.last == "offline" then--不在线
+                sendMessage(241464054,Utils.CQCode_At(qq).."你绑定的id为"..player..
+                    "，请上线后再操作")
+                return true
+            elseif data.money < sum then--余额不够
+                sendMessage(241464054,Utils.CQCode_At(qq).."你余额只有"..data.money)
+                return true
+            else
+                apiTcpSend("eco add "..player.." "..sum,true)
+                data.money = data.money - sum
+                local d,r = jsonEncode(data)
+                XmlApi.Set("minecraftData",player,d)
+                sendMessage(241464054,Utils.CQCode_At(qq).."领取成功，还剩"..data.money)
+                return true
+            end
         elseif msg == "在线" then
             local onlineData = XmlApi.Get("minecraftData","[online]")
             local online = {}--存储在线所有人id
@@ -88,13 +109,7 @@ local function mc(msg,qq,group)
             return true
         elseif msg == "激活" then--激活
             if step == "pass" or step == "done" then
-                local onlineData = XmlApi.Get("minecraftData",player)
-                local data = onlineData == "" and
-                {
-                    time = 0,
-                    last = "offline",
-                    ltime = os.time(),
-                } or jsonDecode(onlineData)
+                local data = mcApi.getData(player)
                 if data.last == "offline" then
                     sendMessage(241464054,Utils.CQCode_At(qq).."你绑定的id为"..player..
                         "，请上线后再操作")
@@ -180,38 +195,7 @@ local function mc(msg,qq,group)
             end
             return true
         elseif msg == "清空在线" then
-            --结束统计在线时长
-            local function stopCount(p)
-                local onlineData = XmlApi.Get("minecraftData",p)
-                local data = onlineData == "" and
-                {
-                    time = 0,
-                    last = "offline",
-                    ltime = os.time(),
-                } or jsonDecode(onlineData)
-                if data.last ~= "online" then return end--上次信息不是在线，停止记录
-                data.last = "offline"
-                data.time = data.time + os.time() - data.ltime
-                data.ltime = os.time()
-                local d,r = jsonEncode(data)
-                if r then
-                    XmlApi.Set("minecraftData",p,d)
-                end
-            end
-            --删除所有在线的人
-            local function onlineClear()
-                local onlineData = XmlApi.Get("minecraftData","[online]")
-                local online = {}--存储在线所有人id
-                if onlineData ~= "" then
-                    online = onlineData:split(",")
-                end
-                while #online > 0 do
-                    local player = table.remove(online,1)
-                    stopCount(player)
-                end
-                XmlApi.Set("minecraftData","[online]","")
-            end
-            onlineClear()
+            mcApi.onlineClear()
             sendMessage(567145439,Utils.CQCode_At(qq).."已清空所有在线信息")
             return true
         end
