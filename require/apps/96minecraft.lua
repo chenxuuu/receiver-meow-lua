@@ -30,16 +30,25 @@ local function mc(msg,qq,group)
             if player == "" then
                 sendMessage(241464054,Utils.CQCode_At(qq).."id重复，换个吧")
             elseif player then
+
                 XmlApi.Set("bindQq",tostring(qq),player)
                 XmlApi.Set("bindStep",tostring(qq),"waiting")
                 sendMessage(241464054,Utils.CQCode_At(qq).."绑定"..player.."成功！\r\n"..
                                     "请耐心等待管理员审核白名单申请哟~\r\n"..
-                                    "如未申请请打开此链接：https://wj.qq.com/s/1308067/143c\r\n"..
+                                    "如未申请请打开此链接：https://www.chenxublog.com/scf\r\n"..
                                     "如果过去24小时仍未被审核，请回复“催促审核”来进行催促")
+
                 sendMessage(567145439, "接待喵糖拌管理：\r\n玩家"..player.."\r\n已成功绑定"..
-                                    "\r\n请及时检查该玩家是否已经提交白名单申请https://wj.qq.com/mine.html"..
-                                    "\r\n如果符合要求，请回复“通过"..tostring(qq).."”来给予白名单"..
-                                    "\r\n如果不符合要求，请回复“不通过"..tostring(qq).."空格原因”来给打回去重填")
+                                    "\r\n下面是他的白名单申请内容")
+                sys.taskInit(function ()
+                    local form = mcApi.readForm(player)..
+                    "\r\n如果符合要求，请回复“通过"..tostring(qq).."”来给予白名单"..
+                    "\r\n如果不符合要求，请回复“不通过"..tostring(qq).."空格原因”来给打回去重填"
+                    while form:len() > 0 do
+                        sendMessage(567145439,form:sub(1,9000))
+                        form = form:sub(9001)
+                    end
+                end)
             else
                 sendMessage(241464054,Utils.CQCode_At(qq).."id不符合要求，仅允许数字、字母、下划线")
             end
@@ -127,10 +136,18 @@ local function mc(msg,qq,group)
             return true
         elseif msg == "催促审核" and step == "waiting" then--催促审核
             sendMessage(567145439, "接待喵糖拌管理：\r\n玩家"..player.."\r\n仅行了催促操作"..
-                                "\r\n请及时检查该玩家是否已经提交白名单申请https://wj.qq.com/mine.html"..
-                                "\r\n如果符合要求，请回复“通过"..tostring(qq).."”来给予白名单"..
-                                "\r\n如果不符合要求，请回复“不通过"..tostring(qq).."原因”来给打回去重填")
+                                "\r\n请及时检查该玩家是否已经提交白名单申请")
             sendMessage(241464054,Utils.CQCode_At(qq).."催促成功")
+
+            sys.taskInit(function ()
+                local form = mcApi.readForm(player)..
+                "\r\n如果符合要求，请回复“通过"..tostring(qq).."”来给予白名单"..
+                "\r\n如果不符合要求，请回复“不通过"..tostring(qq).."空格原因”来给打回去重填"
+                while form:len() > 0 do
+                    sendMessage(567145439,form:sub(1,9000))
+                    form = form:sub(9001)
+                end
+            end)
             return true
         elseif msg:find("重置密码") == 1 and (step == "pass" or step == "done") then
             local password = getRandomString(6)
@@ -176,6 +193,9 @@ local function mc(msg,qq,group)
                 sendMessage(241464054,Utils.CQCode_At(tonumber(qq)).."你的白名单申请已经通过了哟~\r\n"..
                             "游戏上线后，在群里发送“激活”即可获取权限~\r\n"..
                             "你的id："..player)
+                sys.taskInit(function ()--标记为已读取
+                    mcApi.markForm(player)
+                end)
             end
             return true
         elseif msg:find("不通过 *%d+ .+") == 1 then
@@ -190,9 +210,22 @@ local function mc(msg,qq,group)
                 sendMessage(567145439,"已打回"..player.."的白名单申请，原因："..reason)
                 sendMessage(241464054,Utils.CQCode_At(tonumber(qq)).."你的白名单申请并没有通过。\r\n"..
                             "原因："..reason.."\r\n"..
-                            "请按照原因重新填写白名单：https://wj.qq.com/s/1308067/143c\r\n"..
+                            "请按照原因重新填写白名单：https://www.chenxublog.com/scf\r\n"..
                             "你的id："..player.."\r\n如果重新填完了，请发送“催促审核”来让管理重审")
+                sys.taskInit(function ()--标记为已读取
+                    mcApi.markForm(player)
+                end)
             end
+            return true
+        elseif msg:find("查申请 *.+") == 1 then
+            local player = msg:match("查申请 *(.+)")
+            sys.taskInit(function ()--标记为已读取
+                local form = mcApi.readForm(player)
+                while form:len() > 0 do
+                    sendMessage(567145439,form:sub(1,9000))
+                    form = form:sub(9001)
+                end
+            end)
             return true
         elseif msg == "清空在线" then
             mcApi.onlineClear()
