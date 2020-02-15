@@ -2,8 +2,9 @@ local mc = {}
 
 local formList = {"commit3","basic1","basic2","basic3","basic4","basic5",
 "basic6","basic7","basic8","basic9","basic10","basic11","basic12","basic13",
-"basic14","basic15","commit4","mc1","mc2","mc3","mc4","mc5","mc6","mc7","mc8",
-"mc9","mc10","mc11","commit5","text1","text2","text3","text4","text5","text6",
+"basic14","basic15",--"commit4","mc1","mc2","mc3","mc4","mc5","mc6","mc7","mc8",
+--"mc9","mc10","mc11",
+"commit5","text1","text2","text3","text4","text5","text6",
 "text7","text8","text9","commit6","last1","last2","last3","last4",}
 
 local formTitle = {
