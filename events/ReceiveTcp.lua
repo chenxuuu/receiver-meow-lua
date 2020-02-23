@@ -44,8 +44,12 @@ local solve = {
 
 
 return function (message)
-    local messageType = message:sub(1,1)
-    if solve[messageType] then
-        solve[messageType](message:sub(2))
+    local data = message:split("|")
+    for i=1,#data do
+        data[i] = data[i]:gsub("\\\\","\\"):gsub("\\s","|")
+        local messageType = data[i]:sub(1,1)
+        if solve[messageType] then
+            solve[messageType](data[i]:sub(2))
+        end
     end
 end
