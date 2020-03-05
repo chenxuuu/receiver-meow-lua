@@ -166,8 +166,7 @@ for i,j in pairs(events) do
         sys.tiggerRegister(i,f)
         CQLog:Debug("lua插件",LuaEnvName.."注册事件"..i..","..j)
     else
-        --报错信息先不显示
-        --CQLog:Debug("lua插件",LuaEnvName.."注册事件失败"..i..","..(info or "错误信息为空"))
+        CQLog:Debug("lua插件",LuaEnvName.."注册事件失败"..i..","..(info or "错误信息为空"))
     end
 
 end
