@@ -217,13 +217,18 @@ local function mc(msg,qq,group)
                 end)
             end
             return true
-        elseif msg:find("查申请 *.+") == 1 then
+        elseif msg:find("查申请.*") == 1 then
             local player = msg:match("查申请 *(.+)")
-            sys.taskInit(function ()--标记为已读取
-                local form = mcApi.readForm(player)
-                while form:len() > 0 do
-                    sendMessage(567145439,form:sub(1,9000))
-                    form = form:sub(9001)
+            sys.taskInit(function ()
+                if player then
+                    local form = mcApi.readForm(player)
+                    while form:len() > 0 do
+                        sendMessage(567145439,form:sub(1,9000))
+                        form = form:sub(9001)
+                    end
+                else
+                    local list = mcApi.listForm(player)
+                    sendMessage(567145439,"目前未查看的申请：\r\n"..table.concat(list,"\r\n"))
                 end
             end)
             return true

@@ -154,13 +154,34 @@ function mc.GetForm(id)
     end
     unread = unread:sub(1,-2):split(",")
     for i=#unread,1,-1 do
+        print("https://www.sweetcreeper.com/form/get.php","m=get&id="..unread[i])
         local html = asyncHttpGet("https://www.sweetcreeper.com/form/get.php","m=get&id="..
             unread[i])
         local d,r,e = jsonDecode(html)
-        if r and d.basic2 == id then
+        if r and d and d.basic2 == id then
             return d
         end
     end
+end
+
+--获取所有现存表单
+function mc.listForm()
+    local rt = {}
+    local unread = asyncHttpGet("https://www.sweetcreeper.com/form/get.php","m=unread")
+    if not unread:find(",") then
+        return
+    end
+    unread = unread:sub(1,-2):split(",")
+    for i=#unread,1,-1 do
+        print("https://www.sweetcreeper.com/form/get.php","m=get&id="..unread[i])
+        local html = asyncHttpGet("https://www.sweetcreeper.com/form/get.php","m=get&id="..
+            unread[i])
+        local d,r,e = jsonDecode(html)
+        if r and d then
+            table.insert(rt,d.basic2)
+        end
+    end
+    return rt
 end
 
 function mc.readForm(id)
