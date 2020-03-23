@@ -12,7 +12,7 @@ local function av(bv)
     if j.code ~= 0 then return "数据解析失败啦" end
     local image = j.data.pic and asyncImage(j.data.pic)
     return (image and image.."\r\n" or "")..
-    ",标题："..j.data.title..
+    "av"..j.data.aid..",标题："..j.data.title..
     "\r\n"..j.data.desc:gsub("<br/>","\r\n")..
     "\r\n分区："..(j.data.tname and j.data.tname or "")
 end
