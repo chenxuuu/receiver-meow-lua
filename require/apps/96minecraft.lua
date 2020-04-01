@@ -236,6 +236,10 @@ local function mc(msg,qq,group)
             mcApi.onlineClear()
             sendMessage(567145439,Utils.CQCode_At(qq).."已清空所有在线信息")
             return true
+        elseif msg == "清理裂隙" then
+            apiTcpSend("kill @e[type=thaumcraft:fluxrift]",true)
+            sendMessage(567145439,Utils.CQCode_At(qq).."已执行清理裂隙命令")
+            return true
         end
     end
 end
