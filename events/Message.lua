@@ -40,7 +40,7 @@ return function (data)
     --匹配是否需要获取帮助
     if data.msg:lower():find("help *%d*") == 1 or data.msg:find("帮助 *%d*") == 1 or data.msg:find("菜单 *%d*") == 1 then
         local page = data.msg:lower():match("help *(%d+)") or data.msg:match("帮助 *(%d+)") or
-                    data.msg:find("菜单 *(%d+)") or 1
+                    data.msg:match("菜单 *(%d+)") or 1
         page = tonumber(page)--获取页码
         local maxPage = math.ceil(#apps/maxEachPage)
         page = page > maxPage and maxPage or page
