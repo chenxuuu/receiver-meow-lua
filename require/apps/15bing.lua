@@ -1,5 +1,5 @@
 local function getImage()
-    local s = asyncHttpGet("http://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=10")
+    local s = asyncHttpGet("https://cn.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&pid=hp&uhd=1&uhdwidth=3840&uhdheight=2160")
     local t,result,error = jsonDecode(s)
     if result then
         if t.images and t.images[1] and t.images[1].url then
