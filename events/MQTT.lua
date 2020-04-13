@@ -8,7 +8,7 @@
 --对各个topic进行订阅
 local function subscribe()
     local topics = {
-        "luaRobot/sub/"..Utils.setting.ClientID
+        "live/"..Utils.setting.ClientID
     }
     for i=1,#topics do
         local result = Mqtt.Subscribe(topics[i], 0)
@@ -22,11 +22,19 @@ return function (message)
 
     if message.t == "receive" then
         CQLog:Debug("lua插件","MQTT收到消息："..message.topic..","..message.payload)
-        Mqtt.Publish("luaRobot/pub/"..Utils.setting.ClientID, "publish test", 0)
+        --Mqtt.Publish("luaRobot/pub/"..Utils.setting.ClientID, "publish test", 0)
+
+        --直播开启的推送，监控源码见https://github.com/chenxuuu/v-live-check
+        if message.topic == "live/"..Utils.setting.ClientID then
+            local liveInfo,r,e = jsonDecode(message.payload)--解析结果
+            if r and liveInfo then
+                CQApi:SendGroupMessage(261037783,
+                    "开播提醒："..liveInfo.name.."\r\n"..
+                    "标题："..(liveInfo.title or "无").."\r\n"..
+                    ""..liveInfo.url)
+            end
+        end
+
     end
 end
 
-
-
---luaRobot/pub/a06a52aa-f758-47f0-933a-2a6eed405302
---luaRobot/sub/a06a52aa-f758-47f0-933a-2a6eed405302
