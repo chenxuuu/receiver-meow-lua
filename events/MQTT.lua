@@ -29,8 +29,8 @@ return function (message)
             local liveInfo,r,e = jsonDecode(message.payload)--解析结果
             if r and liveInfo then
                 CQApi:SendGroupMessage(261037783,
-                    "开播提醒："..liveInfo.name.."\r\n"..
-                    "标题："..(liveInfo.title or "无").."\r\n"..
+                    liveInfo.name.."\r\n"..
+                    (liveInfo.title or "无标题").."\r\n"..
                     ""..liveInfo.url)
             end
         end
