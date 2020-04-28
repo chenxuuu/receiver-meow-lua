@@ -53,7 +53,8 @@ return function ()
     if AppFirstStart then return end
     AppFirstStart = true
 
-    if CQApi:GetLoginQQId() ~= 751323264 then return end--仅限官方群里的机器人号用这个功能
+    --仅限作者的机器人号用这个功能
+    if CQApi:GetLoginQQId() ~= 751323264 and CQApi:GetLoginQQId() ~= 3617883457 then return end
 
     --服务器空间定期检查任务，十分钟一次
     CQLog:Debug("lua插件","加载服务器空间定期检查任务")
