@@ -75,14 +75,14 @@ return function ()
             local delay
             local time = os.date("*t")
             local next = os.date("*t",os.time())
-            if time.hour >=12 then
+            if time.hour >=3 then
                 next = os.date("*t",os.time()+3600*24)
-                next.hour = 12
+                next.hour = 3
                 next.min = 0
                 next.sec = 0
                 delay = os.time(next) - os.time()
             else
-                next.hour = 12
+                next.hour = 3
                 next.min = 0
                 next.sec = 0
                 delay = os.time(next) - os.time()
