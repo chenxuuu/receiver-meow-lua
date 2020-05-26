@@ -74,17 +74,18 @@ return function ()
         while true do
             local delay
             local time = os.date("*t")
-            if time.hour >=3 then
-                local next = os.date("*t",os.time()+3600*24)
-                next.hour = 3
+            local next = os.date("*t",os.time())
+            if time.hour >=12 then
+                next = os.date("*t",os.time()+3600*24)
+                next.hour = 12
                 next.min = 0
                 next.sec = 0
                 delay = os.time(next) - os.time()
             else
-                next.hour = 3
+                next.hour = 12
                 next.min = 0
                 next.sec = 0
-                delay = os.time(time) - os.time()
+                delay = os.time(next) - os.time()
             end
             CQLog:Debug("lua插件","mc自动重启，延时"..delay.."秒")
             sys.wait(delay * 1000)
