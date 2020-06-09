@@ -25,6 +25,9 @@ end
 tempList = nil--释放临时table
 
 return function (data)
+    -- random seed
+    math.randomseed(data.qq .. tostring(os.time()):reverse():sub(1, 6))
+	
     --封装一个发送消息接口
     --自动判断群聊与私聊
     local function sendMessage(s)
