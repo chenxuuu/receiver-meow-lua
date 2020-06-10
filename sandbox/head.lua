@@ -14,7 +14,8 @@ JSONLIB = require("JSON")
 utils = require("utils")
 
 --加强随机数随机性
-math.randomseed(tostring(os.time()):reverse():sub(1, 6))
+import('System')
+math.randomseed(tostring(DateTime.Now.Ticks):reverse():sub(1, 6))
 
 local less = false
 local maxLine = 10
