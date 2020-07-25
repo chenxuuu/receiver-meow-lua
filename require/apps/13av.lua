@@ -19,12 +19,19 @@ end
 
 return {--b站av号解析
     check = function (data)
-        return data.msg:lower():find("av%d+") or data.msg:lower():find("bv%w+")
+        return data.msg:lower():find("av%d+") or data.msg:lower():find("bv%w+") or
+        data.msg:find("%[CQ:rich,title=&#91;QQ小程序&#93;哔哩哔哩,") == 1
     end,
     run = function (data,sendMessage)
-        sys.taskInit(function ()
-            sendMessage(av(data.msg))
-        end)
+        if data.msg:find("%[CQ:rich,title=&#91;QQ小程序&#93;哔哩哔哩,") == 1 then
+            sendMessage("关爱PC端用户，少发小程序，从我做起\r\n"..
+            "标题："..(data.msg:match([[desc":"(.-)"]]) or "获取失败").."\r\n"..
+            "链接："..(data.msg:match([["qqdocurl":"(.-)%?]]) or "获取失败"))
+        else
+            sys.taskInit(function ()
+                sendMessage(av(data.msg))
+            end)
+        end
         return true
     end,
     explain = function ()
