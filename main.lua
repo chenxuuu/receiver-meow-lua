@@ -115,13 +115,8 @@ end
 
 --根据url显示图片
 function asyncImage(url)
-    local file = "0LuaTemp"..os.time()..getId()..".luatemp"
-    local sr,fr,dr = asyncFileDownload(url,"data/image/"..file,1024 * 1024 * 20,5000)
-    if sr and fr and dr then
-        return "[CQ:image,file="..file.."]"
-    else
-        return ""
-    end
+    url = url:gsub("%]","%%5d")
+    return "[CQ:image,url="..url.."]"
 end
 
 --加强随机数随机性
