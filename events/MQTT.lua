@@ -29,6 +29,7 @@ return function (message)
             local liveInfo,r,e = jsonDecode(message.payload)--解析结果
             if r and liveInfo then
                 CQApi:SendGroupMessage(261037783,
+                    (liveInfo.image and asyncImage(liveInfo.image) .."\r\n" or "")..
                     liveInfo.name.."\r\n"..
                     (liveInfo.title or "无标题").."\r\n"..
                     ""..liveInfo.url)
