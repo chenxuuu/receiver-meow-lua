@@ -58,18 +58,22 @@ json = {
     end
 }
 
+do
 local runCount = 0
 local start = os.time()
+local ot = os.time
+local e = error
 local function trace (event, line)
     runCount = runCount + 1
     if runCount > 100000 then
-        error("运行代码量超过阈值")
+        e("运行代码量超过阈值")
     end
-    if os.time() - start >= 5 then
-        error("代码运行超时")
+    if ot() - start >= 5 then
+        e("代码运行超时")
     end
 end
 debug.sethook(trace, "l")
+end
 
 loadstring = load
 
