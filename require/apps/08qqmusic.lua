@@ -12,7 +12,7 @@ local function qqmusic(message)
             end
         end
         if songID then
-            return "[CQ:music,type=qq,id="..tostring(songID).."]"
+            return cq.code.music("qq",songID)
         else
             return "机器人爆炸了，原因：根本没这首歌"
         end

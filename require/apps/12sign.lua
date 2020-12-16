@@ -41,7 +41,7 @@ end
 
 return {--签到
 check = function (data)
-    return ((data.msg == "签到" or data.msg:find("%[CQ:sign,") == 1 or data.msg == "关闭签到")
+    return ((data.msg == "签到" or data.msg == "关闭签到")
         and XmlApi.Get("settings","sign_open"..tostring(data.group)) ~= "close") or
         (data.msg == "开启签到" and data.qq ~= Utils.Setting.AdminQQ )
 end,

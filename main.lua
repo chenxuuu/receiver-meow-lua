@@ -86,8 +86,7 @@ asyncHttpPost = HttpPost
 
 --根据url显示图片
 function asyncImage(url)
-    url = url:gsub("%]","%%5d")
-    return "[CQ:image,url="..url.."]"
+    return cq.code.image(url)
 end
 
 --加强随机数随机性
