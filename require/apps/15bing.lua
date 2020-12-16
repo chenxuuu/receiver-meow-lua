@@ -17,13 +17,13 @@ check = function (data)
     return data.msg:find("必应") == 1 and (data.msg:find("美图") or data.msg:find("壁纸"))
 end,
 run = function (data,sendMessage)
-    sendMessage(Utils.CQCode_At(data.qq).."已经开始获取了哦")
+    sendMessage(cq.code.at(data.qq).."已经开始获取了哦")
     sys.taskInit(function ()
         sendMessage(getImage())
     end)
     return true
 end,
 explain = function ()
-    return "[CQ:emoji,id=127964]必应壁纸"
+    return "📷必应壁纸"
 end
 }

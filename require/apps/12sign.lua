@@ -1,5 +1,5 @@
 local function sign(qq,msg,group)
-    if msg == "开启签到" and qq == Utils.setting.AdminQQ then
+    if msg == "开启签到" and qq == Utils.Setting.AdminQQ then
         XmlApi.Delete("settings","sign_open"..tostring(group))
         return "已开启群"..tostring(group).."的签到功能"
     elseif msg == "关闭签到" then
@@ -43,13 +43,13 @@ return {--签到
 check = function (data)
     return ((data.msg == "签到" or data.msg:find("%[CQ:sign,") == 1 or data.msg == "关闭签到")
         and XmlApi.Get("settings","sign_open"..tostring(data.group)) ~= "close") or
-        (data.msg == "开启签到" and data.qq ~= Utils.setting.AdminQQ )
+        (data.msg == "开启签到" and data.qq ~= Utils.Setting.AdminQQ )
 end,
 run = function (data,sendMessage)
-    sendMessage(Utils.CQCode_At(data.qq)..sign(data.qq,data.msg,data.group))
+    sendMessage(cq.code.at(data.qq)..sign(data.qq,data.msg,data.group))
     return true
 end,
 explain = function ()
-    return "[CQ:emoji,id=9728][开启/关闭]签到"
+    return "📊[开启/关闭]签到"
 end
 }

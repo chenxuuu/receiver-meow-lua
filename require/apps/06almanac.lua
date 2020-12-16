@@ -714,17 +714,17 @@ function getAlmanac(time,fromqq)
     --恢复随机数种子为随机值
     math.randomseed(tostring(os.time()):reverse():sub(1, 6))
     return("你的运势如下~\r\n"..
-    "[CQ:emoji,id=127569]宜：\r\n"..goodthings[ran[1]]..
+    "💡宜：\r\n"..goodthings[ran[1]]..
     "\r\n"..goodthings[ran[2]]..
     "\r\n"..goodthings[ran[3]]..
     "\r\n"..goodthings[ran[4]]..
     "\r\n"..
-    "[CQ:emoji,id=127538]忌：\r\n"..badthings[ran[5]]..
+    "⛑️忌：\r\n"..badthings[ran[5]]..
     "\r\n"..badthings[ran[6]]..
     "\r\n"..
-    "[CQ:emoji,id=128197]日期："..os.date("%Y年%m月%d日",time).."\r\n"..
-    "[CQ:emoji,id=127919]综合幸运指数："..tostring(math.random(0,100)).."%\r\n"..
-    "[CQ:emoji,id=128221]当日吉言："..saysTemp)
+    "📆日期："..os.date("%Y年%m月%d日",time).."\r\n"..
+    "🔋综合幸运指数："..tostring(math.random(0,100)).."%\r\n"..
+    "🔖当日吉言："..saysTemp)
 end
 
 local function almanac(data)
@@ -743,10 +743,10 @@ check = function (data)
     return data.msg=="今日运势" or data.msg=="明日运势" or data.msg=="昨日运势"
 end,
 run = function (data,sendMessage)
-    sendMessage(Utils.CQCode_At(data.qq)..almanac(data))
+    sendMessage(cq.code.at(data.qq)..almanac(data))
     return true
 end,
 explain = function ()
-    return "[CQ:emoji,id=127881]昨日/今日/明日运势"
+    return "🌕昨日/今日/明日运势"
 end
 }

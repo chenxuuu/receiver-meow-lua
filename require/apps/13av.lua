@@ -35,6 +35,6 @@ return {--b站av号解析
         return true
     end,
     explain = function ()
-        return "[CQ:emoji,id=127902]b站av号解析"
+        return "📺b站av号解析"
     end
 }

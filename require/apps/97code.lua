@@ -3,7 +3,7 @@ check = function (data)
     return data.msg:find("#lua") == 1
 end,
 run = function (data,sendMessage)
-    if data.qq == Utils.setting.AdminQQ then
+    if data.qq == Utils.Setting.AdminQQ then
         local oldprint = print--临时更改print操作
         print = function (...)
             local r = {}
@@ -16,21 +16,21 @@ run = function (data,sendMessage)
             sendMessage(table.concat(r,"  "))
         end
         local result, info = pcall(function ()
-            load(Utils.CQDeCode(data.msg:sub(5)))()
+            load(CQ.Decode(data.msg:sub(5)))()
         end)
         print = oldprint--改回来
         if result then
-            sendMessage(Utils.CQCode_At(data.qq).."成功运行")
+            sendMessage(cq.code.at(data.qq).."成功运行")
         else
-            sendMessage(Utils.CQCode_At(data.qq).."运行失败\r\n"..tostring(info))
+            sendMessage(cq.code.at(data.qq).."运行失败\r\n"..tostring(info))
         end
     else
-        sendMessage(Utils.CQCode_At(data.qq).."\r\n"..
-            Utils.CQEnCode(Utils.RunSandBox(Utils.CQDeCode(data.msg:sub(5)))))
+        sendMessage(cq.code.at(data.qq).."\r\n"..
+            CQ.Encode(Utils.RunSandBox(Utils.Decode(data.msg:sub(5)))))
     end
     return true
 end,
 explain = function ()
-    return "[CQ:emoji,id=9000]#lua运行lua代码"
+    return "📘#lua运行lua代码"
 end
 }

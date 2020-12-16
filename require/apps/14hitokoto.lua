@@ -21,7 +21,7 @@ local function hitokoto(data)
         end
         return hitokoto.."\r\n--"..from.."\r\n"..types[saytype]
     end
-    return getText(say) or Utils.CQCode_At(data.qq).."\r\n加载失败啦"
+    return getText(say) or cq.code.at(data.qq).."\r\n加载失败啦"
 end
 
 
@@ -38,6 +38,6 @@ run = function (data,sendMessage)
     return true
 end,
 explain = function ()
-    return "[CQ:emoji,id=128226]一言"
+    return "📑一言"
 end
 }

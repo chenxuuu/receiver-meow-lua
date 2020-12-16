@@ -1,18 +1,14 @@
 --导入需要的命名空间
---酷q库
-import("com.papapoi.ReceiverMeow","Native.Csharp.App.Common")
---Utils接口
-import("com.papapoi.ReceiverMeow","Native.Csharp.App.LuaEnv")
---HttpTool和HttpWebClient
-import("Native.Csharp.Tool","Native.Csharp.Tool.Http")
+--主库
+import("ReceiverMeow","ReceiverMeow")
+--luaenv库
+import("ReceiverMeow","ReceiverMeow.LuaEnv")
 
 import("System.Text")
 
---简化某些函数的语法
-CQLog = AppData.CQLog
-CQApi = AppData.CQApi
-CQLog:Info("lua插件","加载新虚拟机"..LuaEnvName)
-CQLog:Debug("lua插件","插件版本"..Utils.GetVersion())
+StateName = "lua虚拟机("..LuaEnvName..")"
+
+Log.Info(StateName,"加载新虚拟机"..LuaEnvName)
 
 --重写print函数，重定向到debug接口输出
 function print(...)
@@ -23,32 +19,15 @@ function print(...)
     if #r == 0 then
         table.insert(r,"nil")
     end
-    CQLog:Info("lua插件("..LuaEnvName..")",table.concat(r,"  "))
+    Log.Info(StateName,table.concat(r,"  "))
 end
 
 --加上需要require的路径
-local rootPath = Utils.GetAsciiHex(CQApi.AppDirectory)
-rootPath = rootPath:gsub("[%s%p]", ""):upper()
-rootPath = rootPath:gsub("%x%x", function(c)
-                                    return string.char(tonumber(c, 16))
-                                end)
-package.path = package.path..
-";"..rootPath.."lua/require/?.lua;"..rootPath.."lua/events/?.lua;"
+package.path = package.path..";./lua/require/?.lua;./lua/events/?.lua;"
+package.cpath = package.cpath..";./lua/require/?.lua;./lua/events/?.lua;"
 
 --加载字符串工具包
 require("strings")
-
---重载几个可能影响中文目录的函数
-local oldrequire = require
-require = function (s)
-    local s = Utils.GetAsciiHex(s):fromHex()
-    return oldrequire(s)
-end
-local oldloadfile = loadfile
-loadfile = function (s)
-    local s = Utils.GetAsciiHex(s):fromHex()
-    return oldloadfile(s)
-end
 
 --安全的，带解析结果返回的json解析函数
 --返回值：数据,是否成功,错误信息
@@ -70,6 +49,9 @@ function jsonEncode(t)
     end
 end
 
+--加载CQ库
+cq = require("cq")
+
 --唯一id
 local idTemp = 0
 function getId()
@@ -77,40 +59,27 @@ function getId()
     return idTemp
 end
 
---封装一个异步的http get接口
-function asyncHttpGet(url,para,timeout,cookie)
-    local delayFlag = "http_get_"..os.time()..getId()--基本没有重复可能性的唯一标志
-    sys.async("com.papapoi.ReceiverMeow","Native.Csharp.App.LuaEnv.Utils.HttpGet",
-            {url,para or "",timeout or 5000,cookie or ""},
-    function (r,d)
-        sys.publish(delayFlag,r,d)
-    end)
-    local r1,r2,d = sys.waitUntil(delayFlag, timeout)
-    return d or "",r2 and r1
+--封装一个简便的http get接口
+function HttpGet(url,para,timeout,cookie)
+    local r,e = pcall(function() return Utils.HttpGet(url,para or "",timeout or 5000,cookie or "") end)
+    if r then
+        return e,r
+    else
+        return nil,r,e
+    end
 end
 
---封装一个异步的http post接口
-function asyncHttpPost(url,para,timeout,cookie,contentType)
-    local delayFlag = "http_post_"..os.time()..getId()--基本没有重复可能性的唯一标志
-    sys.async("com.papapoi.ReceiverMeow","Native.Csharp.App.LuaEnv.Utils.HttpPost",
-            {url,para or "",timeout or 5000,cookie or "",
-                contentType or "application/x-www-form-urlencoded"},
-    function (r,d)
-        sys.publish(delayFlag,r,d)
+--封装一个简便的http post接口
+function HttpPost(url,para,timeout,cookie,contentType)
+    local r,e = pcall(function()
+        return Utils.HttpPost(url,para or "",timeout or 5000,cookie or "",
+        contentType or "application/x-www-form-urlencoded")
     end)
-    local r1,r2,d = sys.waitUntil(delayFlag, timeout)
-    return d or "",r2 and r1
-end
-
---封装一个异步的文件下载接口
-function asyncFileDownload(url, path, maxSize, timeout)
-    local delayFlag = "http_file_"..os.time()..getId()--基本没有重复可能性的唯一标志
-    sys.async("com.papapoi.ReceiverMeow","Native.Csharp.App.LuaEnv.Utils.HttpDownload",
-            {url, path, maxSize or 1024 * 1024 * 20, timeout or 5000},
-    function (r,d)
-        sys.publish(delayFlag,r,d)
-    end)
-    return sys.waitUntil(delayFlag, timeout)
+    if r then
+        return e,r
+    else
+        return nil,r,e
+    end
 end
 
 --根据url显示图片
@@ -152,18 +121,47 @@ local events = {
     GroupMessage = "Message",--群消息-------┐---→统一处理
     PrivateMessage = "Message",--私聊消息---┘
     GroupFileUpload = "GroupFileUpload",--有人上传文件
+    -- GroupRecall = "",--撤回
+    -- FriendRecall = "",
+    -- Poke = "",--戳一戳
+    -- LuckyKing = "",--群红包运气王
+    -- Honor = "",--群成员荣誉变更
     TcpServer = "ReceiveTcp",--收到tcp客户端发来的数据
     MQTT = "MQTT",--处理MQTT连接逻辑
 }
 
-for i,j in pairs(events) do
+--每个虚拟机应该加载的事件（不包括group）
+local envEvents = {
+    main = {
+        "AppEnable",
+        --"FriendAdd",
+        --"FriendAddRequest",
+        "GroupAddRequest",
+        "GroupAddInvite",
+    },
+    private = {
+        "PrivateMessage",
+        --"FriendRecall",
+    }
+}
+
+local function regEvents(i,j)
     local f
     local _,info = pcall(function() f = require(j) end)
     if f then
         sys.tiggerRegister(i,f)
-        CQLog:Debug("lua插件",LuaEnvName.."注册事件"..i..","..j)
+        Log.Debug(StateName,LuaEnvName.."注册事件"..i..","..j)
     else
-        CQLog:Debug("lua插件",LuaEnvName.."注册事件失败"..i..","..(info or "错误信息为空"))
+        Log.Warn(StateName,LuaEnvName.."注册事件失败"..i..","..(info or "错误信息为空"))
     end
+end
 
+if envEvents[LuaEnvName] then
+    for i=1,#envEvents[LuaEnvName] do
+        regEvents(envEvents[LuaEnvName][i],events[envEvents[LuaEnvName][i]])
+    end
+else
+    for i,j in pairs(events) do
+        regEvents(i,j)
+    end
 end

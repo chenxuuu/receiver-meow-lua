@@ -30,6 +30,6 @@ run = function (data,sendMessage)
     return true
 end,
 explain = function ()
-    return "[CQ:emoji,id=127932]点歌 加 qq音乐id或歌名"
+    return "🎶点歌 加 qq音乐id或歌名"
 end
 }

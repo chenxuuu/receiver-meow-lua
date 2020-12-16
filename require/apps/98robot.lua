@@ -1,6 +1,7 @@
+local robot_qq = cq.loginInfo().qq
 return {--@触发QQ智能机器人
 check = function (data)
-    return data.msg:find("%[CQ:at,qq="..CQApi:GetLoginQQId().."%]") and
+    return data.msg:find("%[CQ:at,qq="..robot_qq.."%]") and
     data.msg:gsub("%[CQ:.-%]",""):len() > 2
 end,
 run = function (data,sendMessage)
@@ -21,7 +22,7 @@ run = function (data,sendMessage)
         if r then
             if d and d.ret ~= 0 then return end--没结果
             if d and d.data and d.data.answer then
-                sendMessage(Utils.CQCode_At(data.qq)..d.data.answer)
+                sendMessage(cq.code.at(data.qq)..d.data.answer)
                 return true
             end
         end

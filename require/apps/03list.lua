@@ -32,12 +32,12 @@ return {--!list
             table.insert(pt,plist[i])
         end
 
-        sendMessage(Utils.CQCode_At(data.qq).."\r\n[CQ:emoji,id=128221]当前词条回复如下：\r\n"..
+        sendMessage(cq.code.at(data.qq).."\r\n🗂️当前词条回复如下：\r\n"..
         (gt and (table.concat(gt,"\r\n").."\r\n共"..tostring(#gt).."条")).."\r\n"..
         "全局词库内容：\r\n"..table.concat(pt,"\r\n").."\r\n共"..tostring(#pt).."条")
         return true
     end,
     explain = function ()
-        return "[CQ:emoji,id=128221] !list关键词"
+        return "🗂️ !list关键词"
     end
 }

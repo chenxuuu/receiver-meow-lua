@@ -3,7 +3,7 @@ check = function (data)
     return data.msg:find("#rust") == 1
 end,
 run = function (data,sendMessage)
-    sendMessage(Utils.CQCode_At(data.qq).."代码已提交，正在运行~")
+    sendMessage(cq.code.at(data.qq).."代码已提交，正在运行~")
     sys.taskInit(function ()
         local post = {
             version= "stable",
@@ -19,12 +19,12 @@ run = function (data,sendMessage)
         local d,result,error = jsonDecode(html)
         if result then
             if d.error then
-                sendMessage(Utils.CQCode_At(data.qq).."报错了qwq\r\n"..tostring(d.error))
+                sendMessage(cq.code.at(data.qq).."报错了qwq\r\n"..tostring(d.error))
             else
-                sendMessage(Utils.CQCode_At(data.qq).."\r\n"..tostring(d.result))
+                sendMessage(cq.code.at(data.qq).."\r\n"..tostring(d.result))
             end
         else
-            sendMessage(Utils.CQCode_At(data.qq).."代码服务器运行报错qwq")
+            sendMessage(cq.code.at(data.qq).."代码服务器运行报错qwq")
         end
     end)
     return true

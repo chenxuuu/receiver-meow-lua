@@ -44,13 +44,13 @@ check = function (data)
             data.msg:find("查番") or data.msg:find("搜番")
 end,
 run = function (data,sendMessage)
-    sendMessage(Utils.CQCode_At(data.qq).."查询中。。。")
+    sendMessage(cq.code.at(data.qq).."查询中。。。")
     sys.taskInit(function ()
-        sendMessage(Utils.CQCode_At(data.qq).."\r\n"..animeSearch(data.msg))
+        sendMessage(cq.code.at(data.qq).."\r\n"..animeSearch(data.msg))
     end)
     return true
 end,
 explain = function ()
-    return "[CQ:emoji,id=128444]查动画 加 没裁剪过的视频截图"
+    return "🎞️查动画 加 没裁剪过的视频截图"
 end
 }

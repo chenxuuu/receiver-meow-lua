@@ -52,11 +52,11 @@ check = function (data)
 end,
 run = function (data,sendMessage)
     sys.taskInit(function()--用到了异步http，必须新开个任务
-        sendMessage(Utils.CQCode_At(data.qq).."\r\n"..air(data.msg))
+        sendMessage(cq.code.at(data.qq).."\r\n"..air(data.msg))
     end)
     return true
 end,
 explain = function ()
-    return "[CQ:emoji,id=128168]空气质量"
+    return "☁️空气质量"
 end
 }

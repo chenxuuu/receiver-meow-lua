@@ -1,21 +1,9 @@
 --加上需要require的路径
-import("com.papapoi.ReceiverMeow","Native.Csharp.App.LuaEnv")
-import("com.papapoi.ReceiverMeow","Native.Csharp.App.Common")
---加上需要require的路径
-local rootPath = Utils.GetAsciiHex(AppData.CQApi.AppDirectory)
-rootPath = rootPath:gsub("[%s%p]", ""):upper()
-rootPath = rootPath:gsub("%x%x", function(c)
-                                    return string.char(tonumber(c, 16))
-                                end)
 package.path = package.path..
-";"..rootPath.."lua/sandbox/?.lua;"
+";./lua/sandbox/?.lua;"
 
 JSONLIB = require("JSON")
 utils = require("utils")
-
---加强随机数随机性
-import('System')
-math.randomseed(tostring(DateTime.Now.Ticks):reverse():sub(1, 6))
 
 local less = false
 local maxLine = 10

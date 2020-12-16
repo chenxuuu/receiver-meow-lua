@@ -7,6 +7,9 @@
         "import",
         "sys",
         "TcpServer",
-        "TimeSpan"
+        "TimeSpan",
+        "CQ",
+        "Http",
+        "Log"
     ]
 }
