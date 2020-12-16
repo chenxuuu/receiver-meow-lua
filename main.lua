@@ -68,6 +68,7 @@ function HttpGet(url,para,timeout,cookie)
         return nil,r,e
     end
 end
+asyncHttpGet = HttpGet
 
 --封装一个简便的http post接口
 function HttpPost(url,para,timeout,cookie,contentType)
@@ -81,6 +82,7 @@ function HttpPost(url,para,timeout,cookie,contentType)
         return nil,r,e
     end
 end
+asyncHttpPost = HttpPost
 
 --根据url显示图片
 function asyncImage(url)
