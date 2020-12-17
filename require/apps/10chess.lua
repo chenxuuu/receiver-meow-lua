@@ -9,18 +9,18 @@ local function show(data,last,now)
     local xtable = {8,65,122,179,236,293,350,407,464}
     local ytable = {8,65,122,179,236,293,350,407,464,521}
     local pic = Utils.GetBitmap(544,624)
-    Utils.SetImage(pic,1,1,CQApi.AppDirectory.."lua/require/chess/bg.png",544,674)
+    Utils.SetImage(pic,1,1,Utils.Path.."lua/require/chess/bg.png",544,674)
     for i=1,#data do
         for j=1,9 do
             if data[i]:sub(j,j)~="." then
-                Utils.SetImage(pic,xtable[j],ytable[i],CQApi.AppDirectory.."lua/require/chess/"..data[i]:sub(j,j)..".png",54,54)
+                Utils.SetImage(pic,xtable[j],ytable[i],Utils.Path.."lua/require/chess/"..data[i]:sub(j,j)..".png",54,54)
             end
         end
     end
-    if last then Utils.SetImage(pic,xtable[last.x],ytable[last.y],CQApi.AppDirectory.."lua/require/chess/box.png",54,54) end
-    if now then Utils.SetImage(pic,xtable[now.x],ytable[now.y],CQApi.AppDirectory.."lua/require/chess/box.png",54,54) end
-    local fileName = Utils.SaveImage(pic,"0LuaTemp"..tostring(os.time())..tostring(getId())..getRandomString(5))
-    return Utils.CQCode_Image(fileName)
+    if last then Utils.SetImage(pic,xtable[last.x],ytable[last.y],Utils.Path.."lua/require/chess/box.png",54,54) end
+    if now then Utils.SetImage(pic,xtable[now.x],ytable[now.y],Utils.Path.."lua/require/chess/box.png",54,54) end
+    local file = Utils.ImageBase64(pic):match("base64,(.+)")
+    return cq.code.image("base64://"..file)
 end
 
 --初始化棋盘与双方的最初数据
@@ -287,12 +287,12 @@ local function chess(fromqq,message)
         elseif message == "象棋棋盘" then
             return showNow(fromqq)
         else
-            return [[象棋命令帮助[CQ:emoji,id=128161]
-[CQ:emoji,id=128682]象棋开局 开启新一轮棋局
-[CQ:emoji,id=128273]象棋加入 加 对方qq号 加入对方棋局
-[CQ:emoji,id=128228]象棋退出 退出当前棋局
-[CQ:emoji,id=128195]象棋棋盘 查看当前的棋盘状态
-[CQ:emoji,id=128205]象棋走 加 前后坐标 移动棋子
+            return [[象棋命令帮助📍
+⚔️象棋开局 开启新一轮棋局
+🗡️象棋加入 加 对方qq号 加入对方棋局
+🚪象棋退出 退出当前棋局
+📌象棋棋盘 查看当前的棋盘状态
+🛡️象棋走 加 前后坐标 移动棋子
 如：象棋走A5B5
 仅限同群对战]]
         end
@@ -309,6 +309,6 @@ run = function (data,sendMessage)
     return true
 end,
 explain = function ()
-    return "[CQ:emoji,id=128195]象棋 查看象棋功能帮助"
+    return "♟象棋 查看象棋功能帮助"
 end
 }
