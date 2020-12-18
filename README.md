@@ -1,5 +1,9 @@
 # receiver-meow-lua
 
+[![license](https://img.shields.io/github/license/chenxuuu/receiver-meow-lua)](https://github.com/chenxuuu/receiver-meow-lua/blob/master/LICENSE)
+[![receiver-meow](https://img.shields.io/badge/dependencies-receiver_meow-blueviolet.svg)](https://github.com/chenxuuu/receiver-meow)
+[![code-size](https://img.shields.io/github/languages/code-size/chenxuuu/receiver-meow-lua.svg)](https://github.com/chenxuuu/receiver-meow-lua/archive/master.zip)
+
 接待喵lua插件的lua脚本仓库
 
 这个仓库的代码需要配合lua插件本体食用
