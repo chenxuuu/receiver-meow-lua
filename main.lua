@@ -84,6 +84,22 @@ function HttpPost(url,para,timeout,cookie,contentType)
 end
 asyncHttpPost = HttpPost
 
+--封装一个文件下载接口
+function HttpDownload(url, path, timeout, cookie)
+    local r,e = pcall(function()
+        return Utils.HttpDownload(url,"", timeout or 15000,cookie,path)
+    end)
+    if r then
+        return e,r
+    else
+        return nil,r,e
+    end
+end
+--兼容老接口
+asyncFileDownload = function(url, path, maxSize, timeout)
+    HttpDownload(url, path, timeout)
+end
+
 --根据url显示图片
 function asyncImage(url)
     return cq.code.image(url)
