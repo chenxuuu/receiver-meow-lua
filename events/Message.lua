@@ -1,7 +1,6 @@
 --自动读取apps目录，加载所有功能
 local apps = {}
-import("System.IO")
-local AppList = Directory.GetFiles(Utils.Path.."lua/require/apps/")
+local AppList = Utils.GetFileList(Utils.Path.."lua/require/apps/")
 
 --按文件名排序
 local tempList = {}
@@ -11,6 +10,7 @@ for i=0,AppList.Length-1 do
         table.insert(tempList,app)
     end
 end
+AppList = nil
 table.sort(tempList)--排序
 
 --加载每个文件

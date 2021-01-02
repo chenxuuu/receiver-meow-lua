@@ -135,13 +135,13 @@ function string.urlEncode(str)
 end
 
 
-import("System")
 --- 将utf8编码字符转换为其他字符
 -- @string str，要转换编码的字符串
 -- @string str，编码名称，如果错了会直接崩
 -- @return str,目标编码的字符串
 -- @usage ("测试"):utf8To("gb2312")
 function string.utf8To(str,encoding)
+    import("System")
     local s = Encoding.GetEncoding(encoding):GetBytes(str)
     local t = {}
     for i=0,s.Length-1 do table.insert(t,string.char(s[i])) end

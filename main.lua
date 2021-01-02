@@ -3,7 +3,7 @@
 import("ReceiverMeow","ReceiverMeow")
 --luaenv库
 import("ReceiverMeow","ReceiverMeow.LuaEnv")
-
+import("ReceiverMeow","ReceiverMeow.GoHttp")
 import("System.Text")
 
 StateName = "lua虚拟机("..LuaEnvName..")"
@@ -106,8 +106,7 @@ function asyncImage(url)
 end
 
 --加强随机数随机性
-import('System')
-math.randomseed(tostring(DateTime.Now.Ticks):reverse():sub(1, 6))
+math.randomseed(tostring(Utils.Ticks()):reverse():sub(1, 6))
 
 --获取随机字符串
 function getRandomString(len)

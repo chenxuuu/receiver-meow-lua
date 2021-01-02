@@ -1,7 +1,5 @@
 --CQ接口处理库
 local cq = {}
---GoHttp库
-import("ReceiverMeow","ReceiverMeow.GoHttp")
 
 local function hg(p,t)
     local r = Http.Send(p,(jsonEncode(t)))
