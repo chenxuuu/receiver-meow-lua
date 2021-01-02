@@ -14,11 +14,15 @@ return function ()
     Log.Debug(StateName,"加载服务器空间定期检查任务")
     sys.timerLoopStart(function ()
         Log.Debug(StateName,"执行服务器空间定期检查任务")
-        local free = Utils.GetHardDiskFreeSpace("D")
+        local c = io.popen("df /")
+        local ct = c:read("*all")
+        c:close()
+        if not ct then return end
+        local free = tostring(ct:match(" +(%d+) +%d+%%")) // 1024
         if free < 1024 * 10 then--空间小于10G
             cq.sendGroupMsg(567145439,
             cq.code.at(961726194)..
-            "你的小垃圾服务器空间只有"..tostring(Utils.GetHardDiskFreeSpace("D")).."M空间了知道吗？快去清理")
+            "你的小垃圾服务器空间只有"..tostring(free).."M空间了知道吗？快去清理")
         end
     end,600 * 1000)
 
