@@ -26,7 +26,7 @@ run = function (data,sendMessage)
         end
     else
         sendMessage(cq.code.at(data.qq).."\r\n"..
-            CQ.Encode(Utils.RunSandBox(Utils.Decode(data.msg:sub(5)))))
+            CQ.Encode(Utils.RunSandBox(CQ.Decode(data.msg:sub(5)))))
     end
     return true
 end,
