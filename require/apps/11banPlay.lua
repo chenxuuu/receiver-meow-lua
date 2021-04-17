@@ -1,5 +1,6 @@
 
 local function banPlay(msg,qq,g)
+    msg = CQ.Decode(msg)
     if LuaEnvName == "private" then
         return "私聊抽你🐎的奖呢"
     end
