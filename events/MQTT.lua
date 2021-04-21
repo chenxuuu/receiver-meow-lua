@@ -8,7 +8,8 @@
 --对各个topic进行订阅
 local function subscribe()
     local topics = {
-        "live/"..Utils.Setting.ClientID
+        --"live/"..Utils.Setting.ClientID,
+        "/8266/test_online"
     }
     for i=1,#topics do
         local result = Mqtt.Subscribe(topics[i], 0)
@@ -16,6 +17,11 @@ local function subscribe()
     end
 end
 
+local topicAction = {
+    ["/8266/test_online"] = function (payload)
+        XmlApi.Set("settings","lastOnline",tostring(os.time()))
+    end,
+}
 return function (message)
     --连接成功，马上订阅
     if message.t == "connected" then subscribe() return end
@@ -23,18 +29,10 @@ return function (message)
     if message.t == "receive" then
         Log.Debug(StateName,"MQTT收到消息："..message.topic..","..message.payload)
         --Mqtt.Publish("luaRobot/pub/"..Utils.Setting.ClientID, "publish test", 0)
-
-        --直播开启的推送，监控源码见https://github.com/chenxuuu/v-live-check
-        if message.topic == "live/"..Utils.Setting.ClientID then
-            local liveInfo,r,e = jsonDecode(message.payload)--解析结果
-            if r and liveInfo then
-                cq.sendGroupMsg(261037783,
-                    (liveInfo.image and asyncImage(liveInfo.image) .."\r\n" or "")..
-                    liveInfo.name.."\r\n"..
-                    (liveInfo.title or "无标题").."\r\n"..
-                    ""..liveInfo.url)
-            end
+        if topicAction[message.topic] then
+            topicAction[message.topic](message.payload)
         end
+
 
     end
 end

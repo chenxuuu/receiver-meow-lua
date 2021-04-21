@@ -12,7 +12,7 @@ local function hitokoto(data)
     local function getText(s)
         if not s then return end
         local data = JSON:decode(s)
-        if not s then return end
+        if not data then return end
         local hitokoto,saytype,from
         if not pcall(function ()
             hitokoto,saytype,from = data.hitokoto, data.type, data.from
