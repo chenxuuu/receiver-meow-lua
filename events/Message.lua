@@ -38,26 +38,15 @@ return function (data)
     --帮助列表每页最多显示数量
     local maxEachPage = 8
     --匹配是否需要获取帮助
-    if data.msg:lower():find("help *%d*") == 1 or data.msg:find("帮助 *%d*") == 1 or data.msg:find("菜单 *%d*") == 1 then
-        local page = data.msg:lower():match("help *(%d+)") or data.msg:match("帮助 *(%d+)") or
-                    data.msg:match("菜单 *(%d+)") or 1
-        page = tonumber(page)--获取页码
-        local maxPage = math.ceil(#apps/maxEachPage)
-        page = page > maxPage and maxPage or page
-
-        --开始与结束序号
-        local fromApp = (page - 1) * maxEachPage + 1
-        local endApp = fromApp + maxEachPage - 1
-        endApp = endApp > #apps and #apps or endApp
-
+    if data.msg:lower() == "help" or data.msg == "帮助" or data.msg == "菜单" then
         local allApp = {}
-        for i=fromApp,endApp do
+        for i=1,#apps do
             local appExplain = apps[i].explain and apps[i].explain()
             if appExplain then
                 table.insert(allApp, appExplain)
             end
         end
-        sendMessage("📃命令帮助("..tostring(page).."/"..tostring(maxPage).."页)\r\n"..
+        sendMessage("📃命令帮助\r\n"..
         table.concat(allApp, "\r\n").."\r\n"..
         "📄开源代码：\r\nhttps://www.chenxublog.com/qqrobot")
         return
