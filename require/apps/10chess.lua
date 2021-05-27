@@ -127,7 +127,7 @@ local function play(moveData,fromqq)
     local function min(a,b) return a<b and a or b end--取最小的
     local checkRule = {
         a = function(x,y,xx,yy)--车
-                if x~=xx and y ~= yy and math.abs(x-xx)+math.abs(y-yy) < 1 then return false end--必须有一个坐标不变
+                if (x~=xx and y ~= yy) or math.abs(x-xx)+math.abs(y-yy) < 1 then return false end--必须有一个坐标不变
                 if math.abs(x-xx)+math.abs(y-yy) < 2 then return true end--移动一步，不用判断中途是否有阻挡
                 if x==xx then for i=min(y,yy)+1,max(y,yy)-1 do--找路上是否有子阻挡
                     if getPoint(x,i) ~= "." then return false end
