@@ -520,28 +520,38 @@ local initial = {
 [114514]="114514",
 }
 
+local function find(n,count)
+	count = count or 0
+	if count > 10 then
+		return "这么恶臭的数字还有论证的必要吗？"
+	else
+		count = count + 1
+	end
+
+	if initial[n] then return initial[n] end
+	for i,j in pairs(initial) do
+		if i ~= 0 then
+			local a = n % i
+			if a == 0 and initial[n/i] then
+				return "("..initial[n/i]..")*("..j..")"
+			elseif initial[math.floor(n/i)] and initial[a] then
+				return "("..initial[math.floor(n/i)]..")*("..j..")+"..initial[a]
+			elseif initial[math.floor(n/i)] then
+				return "("..initial[math.floor(n/i)]..")*("..j..")+"..find(a,count)
+			end
+		end
+	end
+	return "这么恶臭的数字还有论证的必要吗？"
+end
+
 return {--b站av号解析
     check = function (data)
         return data.msg:find("数字论证") and tonumber(data.msg:match("(%d+)"))
     end,
     run = function (data,sendMessage)
         local num = tonumber(data.msg:match("(%d+)"))
-        if initial[num] then
-            sendMessage(cq.code.at(data.qq)..tostring(initial[num]))
-        elseif num < 1000000000 then
-            local r = {}
-            local where = 0
-            while num > 0 do
-                local now = num % 10
-                num = math.floor(num/10)
-                if where == 0 then
-                    table.insert(r,initial[now])
-                else
-                    table.insert(r,"("..initial[now]..")*("..initial[10]..")^("..initial[where]..")")
-                end
-                where = where + 1
-            end
-            sendMessage(cq.code.at(data.qq)..table.concat(r,"+"))
+        if num < 1000000000 then
+            sendMessage(cq.code.at(data.qq)..find(num))
         else
             sendMessage(cq.code.at(data.qq).."这么恶臭的数字还有必要论证吗？")
         end
