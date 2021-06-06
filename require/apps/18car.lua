@@ -7,7 +7,8 @@ return {--b站av号解析
         local f,l = data.msg:lower():match("验车 *(%l+)[ -]*(%d+)")
         print(f,l)
         if f and l then
-            local html = HttpGet("http://www."..XmlApi.Get("settings","jav")..".com/cn/vl_searchbyid.php?keyword="..f.."-"..l)
+            local html,r,e = HttpGet("http://www."..XmlApi.Get("settings","jav")..".com/cn/vl_searchbyid.php?keyword="..f.."-"..l,nil,10000)
+            if not html then sendMessage(cq.code.at(data.qq).."没找到") print(html,r,e) return true end
             local title = html:match([[<div id="video_title"><h3 class="post%-title text"><a href="/cn/%?v=.-" rel='bookmark' >(.-)</a></h3>]])
             local cover = html:match([[<img id="video_jacket_img" src="(.-)"]])
             local time = html:match([[<td class="header">发行日期:</td>.-<td class="text">(.-)</td>]])
@@ -24,6 +25,7 @@ return {--b站av号解析
                 end
                 sendMessage(cq.code.at(data.qq)..title.."\r\n官方封面："..cover.."\r\n发行时间："..time.."\r\n视频时长："..len.."分钟")
             else
+                print(title , cover , time , len)
                 sendMessage(cq.code.at(data.qq).."没找到")
             end
         else
