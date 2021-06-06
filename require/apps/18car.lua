@@ -18,7 +18,7 @@ return {--b站av号解析
                 local su = HttpPost("https://xn--ugt.cc/api/set.php",para)
                 local j,r = jsonDecode(su)
                 if r and j then
-                    cover = j.content.url
+                    cover = "https://"..j.content.url
                 else
                     cover = "获取失败"
                 end
