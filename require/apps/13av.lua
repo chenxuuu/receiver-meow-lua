@@ -25,7 +25,7 @@ return {--b站av号解析
     run = function (data,sendMessage)
         local msg = data.msg:gsub("%[CQ:.-%]","")
         if msg:find("https://b23.tv/") then--短链接解码
-            msg = msg:match("(https://b23.tv/.+)")
+            msg = msg:match("(https://b23.tv/%w+)")
             msg = HttpJump(msg)
         end
         sendMessage(av(msg))
