@@ -48,7 +48,13 @@ return function ()
             Log.Debug(StateName,"mc自动重启，延时"..delay.."秒")
             sys.wait(delay * 1000)
             Log.Debug(StateName,"mc自动重启，开始执行")
-            if Utils.GetHardDiskFreeSpace("D") > 1024 * 10 then
+
+            local c = io.popen("df /")
+            local ct = c:read("*all")
+            c:close()
+            if not ct then return end
+            local free = tostring(ct:match(" +(%d+) +%d+%%")) // 1024
+            if free > 1024 * 10 then
                 cq.sendGroupMsg(241464054,
                     "一分钟后，将自动进行服务器例行重启与资源世界回档，请注意自己身上的物品")
                 TcpServer.Send("一分钟后，将自动进行服务器例行重启与资源世界回档，请注意自己身上的物品")
