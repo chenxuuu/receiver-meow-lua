@@ -39,6 +39,12 @@ local solve = {
         cq.sendGroupMsg(241464054,"服务器已启动完成")
         mc.onlineClear()
         TcpServer.Send("cmdworld create mine")
+        sys.taskInit(function()
+            for i=1,12 do
+                sys.wait(10000)
+                TcpServer.Send("cmdworld gamerule set mine keepInventory true")
+            end
+        end)
     end,
 }
 
