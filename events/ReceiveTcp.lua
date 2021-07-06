@@ -32,7 +32,7 @@ local solve = {
            msg:find("%[四周目%]") or
            msg:find("%[四周目雪世界%]") or
            msg:find("%[资源世界%]") then
-            cq.sendGroupMsg(241464054,CQ.EnCode(msg))
+            cq.sendGroupMsg(241464054,CQ.Encode(msg))
         end
     end,
     c = function ()
