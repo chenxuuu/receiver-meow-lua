@@ -19,7 +19,7 @@ end
 
 return {--b站av号解析
     check = function (data)
-        local msg = data.msg:gsub("%[CQ:.-%]","")--防止匹配到cq码
+        local msg = data.msg:gsub("%[CQ:.-%]",""):lower()--防止匹配到cq码
         return msg:find("av%d+") or msg:find("bv%w+") or msg:find("https://b23.tv/")
     end,
     run = function (data,sendMessage)
