@@ -9,6 +9,23 @@ local function kickSpace(s)
     return s
 end
 
+--防止切割到不完整的中括号。。。
+local function notRightBrackets(s)
+    local temp = {}
+    for i=1,#s do
+        if s:sub(i,i) == "[" then
+            table.insert(temp,s:sub(i,i))
+        elseif s:sub(i,i) == "]" then
+            if temp[#temp] == "[" then
+                table.remove(temp,#temp)
+            else
+                return true
+            end
+        end
+    end
+    return #temp ~= 0
+end
+
 return {--!add
 check = function (data)--检查函数，拦截则返回true
     return (data.msg:find("！ *add *.+：.+") == 1 or data.msg:find("! *add *.+:.+") == 1)
@@ -24,7 +41,8 @@ run = function (data,sendMessage)--匹配后进行运行的函数
     if not keyWord then keyWord,answer = data.msg:match("! *add *(.-):(.+)") end
     keyWord = kickSpace(keyWord)
     answer = kickSpace(answer)
-    if not keyWord or not answer or keyWord:len() == 0 or answer:len() == 0 then
+    if not keyWord or not answer or keyWord:len() == 0 or answer:len() == 0 or
+        notRightBrackets(keyWord) then
         sendMessage(cq.code.at(data.qq).."格式错误，请检查") return true
     end
     XmlApi.Add(tostring(LuaEnvName == "private" and "common" or data.group),keyWord,answer)
