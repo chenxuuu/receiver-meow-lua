@@ -6,6 +6,9 @@ local function kickSpace(s)
     while s:sub(1,1) == " " do
         s = s:sub(2)
     end
+    while s:sub(-1,-1) == " " do
+        s = s:sub(1,-2)
+    end
     return s
 end
 
