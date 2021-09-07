@@ -52,6 +52,12 @@ return function (data)
         return
     end
 
+    data = {
+        qq = data.qq,
+        group = data.group,
+        msg = data.msg:gsub("(%[CQ:image,file=.-%.image),url=.-%]","%1]")
+    }
+
     --遍历所有功能
     for i=1,#apps do
         if apps[i].check and apps[i].check(data) then
