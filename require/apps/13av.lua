@@ -19,11 +19,25 @@ end
 
 return {--b站av号解析
     check = function (data)
+        if data.msg:find("%[CQ:json,data={.-b23.tv.-%]") then
+            return true
+        end
         local msg = data.msg:gsub("%[CQ:.-%]",""):lower()--防止匹配到cq码
         return msg:find("av%d+") or msg:find("bv%w+") or msg:find("https://b23.tv/")
     end,
     run = function (data,sendMessage)
         local msg = data.msg:gsub("%[CQ:.-%]","")
+
+        if data.msg:find("%[CQ:json,data={.-b23.tv.-%]") then
+            local url = data.msg:match("b23.tv\\-/(.-)%?")
+            if url then
+                msg = "https://b23.tv/"..url
+            else
+                sendMessage("关爱弱势群体，少发小程序分享")
+                return
+            end
+        end
+
         if msg:find("https://b23.tv/") then--短链接解码
             msg = msg:match("(https://b23.tv/%w+)")
             msg = HttpJump(msg)
