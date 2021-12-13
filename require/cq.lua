@@ -23,11 +23,20 @@ end
 
 --发送群信息
 function cq.sendGroupMsg(group,msg,autoEscape)
-    local r =  hg("send_group_msg",{
-        group_id = group,
-        message = msg,
-        auto_escape = autoEscape and true or false
-    })
+    local r
+    if group:find("c") then
+        r =  hg("send_guild_channel_msg",{
+            guild_id = group:match("c(.+),.+"),
+            channel_id = group:match("c.+,(.+)"),
+            message = msg,
+        })
+    else
+        r =  hg("send_group_msg",{
+            group_id = group,
+            message = msg,
+            auto_escape = autoEscape and true or false
+        })
+    end
     if r.status == "ok" and r.data.message_id then
         return r.data.message_id
     else
