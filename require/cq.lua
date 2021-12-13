@@ -24,7 +24,7 @@ end
 --发送群信息
 function cq.sendGroupMsg(group,msg,autoEscape)
     local r
-    if group:find("c") then
+    if type(group) == "string" then
         r =  hg("send_guild_channel_msg",{
             guild_id = group:match("c(.+),.+"),
             channel_id = group:match("c.+,(.+)"),
