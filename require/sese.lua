@@ -19,10 +19,8 @@ local convert = {
     function (s) return s end,
 }
 
-
-return function (s)
+local function se(s)
     local t = jb(s)
-    
     local sese = {}
     for i=1,#t do
         for j=1,#convert do
@@ -37,4 +35,13 @@ return function (s)
         table.insert(sese,"❤")
     end
     return table.concat(sese)
+end
+
+return function (s)
+    s = s:gsub("%[CQ:.-%]",""):gsub("\r",""):split("\n")
+    local t = {}
+    for i=1,#s do
+        table.insert(t,se(s[i]))
+    end
+    return table.concat(t,"\r\n")
 end
