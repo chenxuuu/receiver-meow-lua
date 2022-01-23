@@ -19,7 +19,7 @@ local function hitokoto(data)
         end) then
             return
         end
-        return hitokoto.."\r\n--"..from.."\r\n"..(types[saytype] or types.g)
+        return hitokoto.."\r\n--"..(from or "未知来源").."\r\n"..(types[saytype] or "未知类别")
     end
     return getText(say) or cq.code.at(data.qq).."\r\n加载失败啦"
 end
