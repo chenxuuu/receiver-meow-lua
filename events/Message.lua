@@ -55,7 +55,7 @@ return function (data)
     data = {
         qq = data.qq,
         group = data.group,
-        msg = data.msg:gsub("(%[CQ:image,file=.-%.image),url=.-%]","%1]")
+        msg = data.msg:gsub("(.-gchatpic_new/)%d-(/.-)","%1123456%2"))
     }
 
     --遍历所有功能
