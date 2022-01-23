@@ -24,10 +24,14 @@ for i=1,#tempList do
 end
 tempList = nil--释放临时table
 
+local sese = require("sese")
+
 return function (data)
     --封装一个发送消息接口
     --自动判断群聊与私聊
+    local seseStatus = XmlApi.Get("sese",tostring(data.group)) == "on"--色色开关
     local function sendMessage(s)
+        if seseStatus then s = sese(s) end--色色开关
         if LuaEnvName ~= "private" then
             cq.sendGroupMsg(data.group,s)
         else
@@ -55,7 +59,7 @@ return function (data)
     data = {
         qq = data.qq,
         group = data.group,
-        msg = data.msg:gsub("(.-gchatpic_new/)%d-(/.-)","%1123456%2"))
+        msg = data.msg:gsub("(.-gchatpic_new/)%d-(/.-)","%1123456%2")
     }
 
     --遍历所有功能
