@@ -10,22 +10,6 @@ return function ()
     --仅限作者的机器人号用这个功能
     if cq.loginInfo().qq ~= 751323264 and cq.loginInfo().qq ~= 3617883457 then return end
 
-    --服务器空间定期检查任务，十分钟一次
-    Log.Debug(StateName,"加载服务器空间定期检查任务")
-    sys.timerLoopStart(function ()
-        Log.Debug(StateName,"执行服务器空间定期检查任务")
-        local c = io.popen("df /")
-        local ct = c:read("*all")
-        c:close()
-        if not ct then return end
-        local free = tostring(ct:match(" +(%d+) +%d+%%")) // 1024
-        if free < 1024 * 10 then--空间小于10G
-            cq.sendGroupMsg(567145439,
-            cq.code.at(961726194)..
-            "你的小垃圾服务器空间只有"..tostring(free).."M空间了知道吗？快去清理")
-        end
-    end,600 * 1000)
-
     --mc服务器定时重启
     Log.Debug(StateName,"加载mc服务器定时重启任务")
     sys.taskInit(function ()
@@ -49,12 +33,19 @@ return function ()
             sys.wait(delay * 1000)
             Log.Debug(StateName,"mc自动重启，开始执行")
 
+            Log.Debug(StateName,"执行服务器空间定期检查任务")
             local c = io.popen("df /")
             local ct = c:read("*all")
             c:close()
             if not ct then return end
             local free = tostring(ct:match(" +(%d+) +%d+%%")) // 1024
-            if free > 1024 * 10 then
+            if free < 1024 * 10 then--空间小于10G
+                cq.sendGroupMsg(567145439,
+                cq.code.at(961726194)..
+                "你的小垃圾服务器空间只有"..tostring(free).."M空间了知道吗？快去清理")
+            end
+
+            if free > 1024 * 15 then
                 cq.sendGroupMsg(241464054,
                     "一分钟后，将自动进行服务器例行重启与资源世界回档，请注意自己身上的物品")
                 TcpServer.Send("一分钟后，将自动进行服务器例行重启与资源世界回档，请注意自己身上的物品")
