@@ -64,7 +64,7 @@ end,
 run = function (data,sendMessage)
     local q,s = data.msg:match("%[CQ:at,qq=(%d+)%] */(.+)")
     if q and s then
-        sendMessage(qsay(q,getName(data.group,tonumber(q)),s))
+        sendMessage(qsay(q,getName(data.group,tonumber(q)),CQ.Decode(s)))
         return true
     end
 end,
