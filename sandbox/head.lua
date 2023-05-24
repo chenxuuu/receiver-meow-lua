@@ -115,7 +115,6 @@ local safeFunctions = {
     unpack = true,
     _VERSION = true,
     xpcall = true,
-    coroutine = true,
     string = true,
     table = true,
     math = true,
