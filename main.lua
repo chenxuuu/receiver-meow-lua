@@ -71,10 +71,10 @@ end
 asyncHttpGet = HttpGet
 
 --封装一个简便的http post接口
-function HttpPost(url,para,timeout,cookie,contentType,header)
+function HttpPost(url,para,timeout,cookie,contentType,header,getCookie)
     local r,e = pcall(function()
         return Utils.HttpPost(url,para or "",timeout or 5000,cookie or "",
-        contentType or "application/x-www-form-urlencoded",header)
+        contentType or "application/x-www-form-urlencoded",header,getCookie)
     end)
     if r then
         return e,r
