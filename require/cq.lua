@@ -269,6 +269,31 @@ function cq.info()
     return hg("get_version_info",{}).data
 end
 
+
+--从消息中过滤出图片文件名
+function cq.getImage(msg)
+    return msg:match("%[CQ:image,.*file=(.-%.image),")
+end
+
+--图片 OCR
+function cq.ocr(img)
+    if img:find("%[") then--说明没转换
+        img = cq.getImage(img)
+    end
+    if not img then return end
+    local r = hg("ocr_image",{
+        image = img,
+    }).data
+    if not r then return end
+    local text = {}
+    for i,j in pairs(r.texts) do
+        if j.confidence > 50 then
+            table.insert(text,j.text)
+        end
+    end
+    return table.concat(text,"\n")
+end
+
 --cq码
 cq.code = {}
 
