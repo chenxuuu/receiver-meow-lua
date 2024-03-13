@@ -153,8 +153,14 @@ local events = {
     -- LuckyKing = "",--群红包运气王
     -- Honor = "",--群成员荣誉变更
     TcpServer = "ReceiveTcp",--收到tcp客户端发来的数据
-    MQTT = "MQTT",--处理MQTT连接逻辑
+    --MQTT = "MQTT",--处理MQTT连接逻辑
 }
+
+--如果是MQTT环境，只加载MQTT事件
+if LuaEnvName == "MQTT" then
+    local mqttEvent = events.MQTT
+    events = {MQTT = mqttEvent}
+end
 
 --每个虚拟机应该加载的事件（不包括group）
 local envEvents = {
