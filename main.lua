@@ -158,8 +158,7 @@ local events = {
 
 --如果是MQTT环境，只加载MQTT事件
 if LuaEnvName == "MQTT" then
-    local mqttEvent = events.MQTT
-    events = {MQTT = mqttEvent}
+    events = {MQTT = "MQTT"}
 end
 
 --每个虚拟机应该加载的事件（不包括group）
