@@ -30,12 +30,15 @@ return function (data)
     --封装一个发送消息接口
     --自动判断群聊与私聊
     local seseStatus = XmlApi.Get("sese",tostring(data.group)) == "on"--色色开关
+    local mqttSend = data.send
     local function sendMessage(s)
         if seseStatus then s = sese(s) end--色色开关
-        if LuaEnvName ~= "private" then
-            cq.sendGroupMsg(data.group,s)
-        else
+        if LuaEnvName == "private" then
             cq.sendPrivateMsg(data.qq,s)
+        elseif LuaEnvName == "MQTT" then
+            mqttSend(data.qq,s)
+        else
+            cq.sendGroupMsg(data.group,s)
         end
     end
 

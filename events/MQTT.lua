@@ -9,7 +9,8 @@
 local function subscribe()
     local topics = {
         --"live/"..Utils.Setting.ClientID,
-        "/8266/test_online"
+        "/8266/test_online",
+        "/tg/receive",--tg消息
     }
     for i=1,#topics do
         local result = Mqtt.Subscribe(topics[i], 0)
@@ -17,9 +18,39 @@ local function subscribe()
     end
 end
 
+local messageEvent
+local robot_qq
+local tg_bot = "@xxxxxxbot "
 local topicAction = {
     ["/8266/test_online"] = function (payload)
         XmlApi.Set("settings","lastOnline",tostring(os.time()))
+    end,
+    ["/tg/receive"] = function (payload)
+        --data.msg, data.from
+        local data = jsonDecode(payload)
+        local to = data.from
+        data.qq = 0
+        data.group = data.from
+        data.send = function(qq,msg)
+            local s = jsonEncode({
+                msg = msg,
+                to = to
+            })
+            Mqtt.Publish("/tg/send", s, 0)
+        end
+        cq.code.at = function() return "" end
+        if not robot_qq then
+            robot_qq = cq.loginInfo().qq
+        end
+        if data.msg:find(tg_bot) then
+            data.msg = data.msg:gsub(tg_bot,"[CQ:at,qq="..robot_qq.."]")
+        end
+        if not messageEvent then
+            local _,info = pcall(function() messageEvent = require("Message") end)
+        end
+        if messageEvent then
+            messageEvent(data)
+        end
     end,
 }
 return function (message)
